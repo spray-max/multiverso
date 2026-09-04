@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multiverso Oficial - Wiki</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+background:#000;
+background-image: radial-gradient(white 1px, transparent 1px), radial-gradient(white 1px, transparent 1px);
+background-size: 50px 50px, 80px 80px;
+background-position: 0 0, 25px 25px;
+color:#fff;font-family:Arial, sans-serif;padding:20px;min-height:100vh;
+}
+body::before{
+content:"";position:fixed;inset:0;background:radial-gradient(ellipse at center, #0a0a2a 0%, #000 70%);z-index:-1;
+}
+header{text-align:center;padding:30px;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border-radius:20px;margin-bottom:20px;border:1px solid #ffffff20}
+header h1{font-size:42px;text-shadow:0 0 10px #00ffff}
+header p{font-size:16px;margin-top:8px;color:#00ffff;letter-spacing:2px}
+#search{width:100%;padding:15px;border-radius:30px;border:1px solid #ffffff30;background:rgba(255,255,255,0.1);color:#fff;font-size:16px;margin-bottom:30px;backdrop-filter:blur(5px)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:25px}
+.planet-card{display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:0.3s}
+.planet-card:hover{transform:scale(1.1) translateY(-5px)}
+.planet{
+width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+font-weight:bold;font-size:16px;position:relative;
+}
+.planet-card h2{margin-top:12px;font-size:14px;color:#fff;text-align:center}
+.planet-card .status{font-size:11px;color:#aaa;text-align:center;margin-top:5px;height:32px;overflow:hidden;display:-webkit-box;line-clamp:2;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+
+.c-earth{
+background: url('https://upload.wikimedia.org/wikipedia/commons/6/6f/Earth_Eastern_Hemisphere.jpg');
+background-size: cover;background-position: center;
+box-shadow: inset -20px -20px 40px rgba(0,0,0,0.9), 0 0 30px #4a90e2;
+color:transparent;border-radius:50%;
+}
+
+.c-blue{
+background: radial-gradient(circle at 30% 30%, #00f, rgb(4, 4, 113), #033b94);
+box-shadow: inset -15px -15px 30px rgb(16, 3, 114), 0 0 15px rgba(0,0,255,0.6);
+color:#fff;     
+}
+
+.c-white{
+background: radial-gradient(circle at 30% 30%, #ffffff, #e0e0e0, #999999);
+box-shadow: inset -15px -15px 30px rgba(0,0,0,0.5), 0 0 15px rgba(255,255,255,0.6);
+color:#000;
+}
+
+.c-explosion{
+background: url('https://upload.wikimedia.org/wikipedia/commons/7/73/Fireball.svg');
+background-color: #000;
+background-size: 160%;
+background-position: center;
+box-shadow: 0 0 20px #ff4400;
+color:#fff;
+text-shadow: 0 0 5px #000;
+border-radius:50%;
+animation: pulse 1s infinite alternate;
+}
+@keyframes pulse{from{box-shadow:0 0 10px #ff4400}to{box-shadow:0 0 25px #ff8800}}
+
+#modal{position:fixed;inset:0;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+#modalBox{background:#10102a;width:100%;max-width:600px;border-radius:16px;padding:30px;border:1px solid #333;text-align:center;position:relative}
+.close{position:absolute;top:15px;right:20px;font-size:28px;cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+<h1>MULTIVERSO OFICIAL</h1>
+<p>102 DIMENSÕES</p>
+</header>
+<input type="text" id="search" placeholder="Buscar dimensão..." />
+<div class="grid" id="grid"></div>
+
+<div id="modal">
+<div id="modalBox">
+<span class="close" onclick="closeModal()">✕</span>
+<h2 id="mId" style="color:#00ffff;font-size:42px;margin-bottom:15px"></h2>
+<p id="mStatus" style="color:#ccc;font-size:16px;line-height:1.5"></p>
+</div>
+</div>
+
+<script>
+const dims = [
+{id:"A-00",status:"Vida real, nossa realidade",cls:"c-earth"},
+{id:"A-01",status:"Objetos controlados por polvos alienígenas - Polvens grudam no rosto sem volta. Série nunca aconteceu.",cls:"c-white"},
+{id:"A-02",status:"Igual mas nunca encontraram o carregador nas masmorras",cls:"c-white"},
+{id:"A-03",status:"Turma principal tinha Calça e Lixeira também",cls:"c-white"},
+{id:"A-04",status:"Objetos e humanos são brinquedos",cls:"c-white"},
+{id:"A-05",status:"Apontador é famoso",cls:"c-white"},
+{id:"A-06",status:"Saco de Arroz morreu de verdade",cls:"c-white"},
+{id:"A-07",status:"Gêneros trocados",cls:"c-white"},
+{id:"A-08",status:"Humanos viram insetos após Documento alterar DNA sem querer",cls:"c-white"},
+{id:"A-09",status:"Objetos morrem em explosão nuclear pelos humanos",cls:"c-explosion"},
+{id:"A-10",status:"Nomes reais começam com B",cls:"c-white"},
+{id:"A-11",status:"Documento nunca conheceu a turma, derrota deles e vitória do Rei",cls:"c-white"},
+{id:"A-12",status:"Rei fez mais aliados após ataque humano, venceu e libertou todos. Série nunca aconteceu.",cls:"c-white"},
+{id:"A-13",status:"MM e Luva namoram",cls:"c-white"},
+{id:"A-14",status:"Sanduba é só sanduba e Luva é só luva de boxe",cls:"c-white"},
+{id:"A-15",status:"Rei nunca tentou ir atrás de aliados, série nunca aconteceu.",cls:"c-white"},
+{id:"A-16",status:"Sanduba morreu pq ficou estragado demais",cls:"c-white"},
+{id:"A-17",status:"Futuro 20 anos após a guerra",cls:"c-white"},
+{id:"A-18",status:"Turma naufragou e todos morreram",cls:"c-white"},
+{id:"A-19",status:"Deus da Rima matou Saco no julgamento",cls:"c-white"},
+{id:"A-20",status:"Saco inteligente e Documento burra",cls:"c-white"},
+{id:"A-21",status:"Sanduba ficou preso na A-31 após portal e virou zumbi",cls:"c-white"},
+{id:"A-22",status:"Quadrado nunca abriu portal, nunca existiu Retângulo",cls:"c-white"},
+{id:"A-23",status:"Humanos são aliens verdes com antenas",cls:"c-white"},
+{id:"A-24",status:"Retângulo venceu batalha contra MM.exe e nunca morreu",cls:"c-white"},
+{id:"A-25",status:"Objetos são aves",cls:"c-white"},
+{id:"A-26",status:"Objetos são répteis",cls:"c-white"},
+{id:"A-27",status:"Rei tenta fazer nave pra Terra, morre porque nave caiu",cls:"c-white"},
+{id:"A-28",status:"Stop motion",cls:"c-white"},
+{id:"A-29",status:"Desenho dos anos 30",cls:"c-white"},
+{id:"A-30",status:"Objetos são humanos e humanos são objetos",cls:"c-white"},
+{id:"A-31",status:"Experimento da Documento todos viraram zumbis",cls:"c-white"},
+{id:"A-32",status:"Todos objetos são peixes",cls:"c-white"},
+{id:"A-33",status:"Objetos tubarões e humanos peixes",cls:"c-white"},
+{id:"A-34",status:"Objetos borboletas e humanos baratas",cls:"c-white"},
+{id:"A-35",status:"Objetos louva-deus e humanos larvas",cls:"c-white"},
+{id:"A-36",status:"Olho se rebela contra Rei com telecinese, infecta Terra e planeta objeto",cls:"c-white"},
+{id:"A-37",status:"Luva morre e causa supernova que detona planeta objeto",cls:"c-explosion"},
+{id:"A-38",status:"Objetos são mutantes criados por humanos",cls:"c-white"},
+{id:"A-39",status:"Humanos bonzinhos viraram aliados",cls:"c-white"},
+{id:"A-40",status:"Rei nunca traiu Bispo e outros, série nunca aconteceu",cls:"c-white"},
+{id:"A-41",status:"Objetos e humanos são Legos",cls:"c-white"},
+{id:"A-42",status:"Saco de Arroz é Rei",cls:"c-white"},
+{id:"A-43",status:"Rainha que traiu Bispo e os outros",cls:"c-white"},
+{id:"A-44",status:"Objetos vespas",cls:"c-white"},
+{id:"A-45",status:"Objetos velho oeste",cls:"c-white"},
+{id:"A-46",status:"Objetos viraram pedra pelos humanos",cls:"c-white"},
+{id:"A-47",status:"Objetos medievais",cls:"c-white"},
+{id:"A-48",status:"Objetos pré-históricos",cls:"c-white"},
+{id:"A-49",status:"Turma super heróis com poderes, série nunca aconteceu",cls:"c-white"},
+{id:"A-50",status:"Documento morreu na guerra contra o Rei",cls:"c-white"},
+{id:"A-51",status:"Objeto com animação ruim, série nunca aconteceu",cls:"c-white"},
+{id:"A-52",status:"Documento é vilã",cls:"c-white"},
+{id:"A-53",status:"Luva surda e muda",cls:"c-white"},
+{id:"A-54",status:"Universo é jogo de videogame",cls:"c-white"},
+{id:"A-55",status:"Universo é Minecraft",cls:"c-white"},
+{id:"A-56",status:"Objetos robôs criados por humanos, série nunca aconteceu",cls:"c-white"},
+{id:"A-57",status:"Planeta objeto explodiu, Rei recusou acordo com humanos",cls:"c-explosion"},
+{id:"A-58",status:"Objetos estão em simulação que humanos colocaram",cls:"c-white"},
+{id:"A-59",status:"Humanos gigantes e objetos minúsculos",cls:"c-white"},
+{id:"A-60",status:"Turma principal é gorda",cls:"c-white"},
+{id:"A-61",status:"Objetos são pngs, gifs ou má qualidade",cls:"c-white"},
+{id:"A-62",status:"Saco de Arroz é YouTuber",cls:"c-white"},
+{id:"A-63",status:"SÉRIE ORIGINAL, nenhuma alteração - PONTO DE VISTA NOSSO",cls:"c-white"},
+{id:"A-64",status:"Humanos são poltronas",cls:"c-white"},
+{id:"A-65",status:"Humanos são moscas",cls:"c-white"},
+{id:"A-66",status:"MM é chefe de cozinha e dono de restaurante",cls:"c-white"},
+{id:"A-67",status:"Objetos não têm rosto nem membros",cls:"c-white"},
+{id:"A-68",status:"Objetos são brilhantes e emanam muita luz",cls:"c-white"},
+{id:"A-69",status:"Turma principal faz parte da máfia",cls:"c-white"},
+{id:"A-70",status:"Luva veterinária e resto cirurgiões",cls:"c-white"},
+{id:"A-71",status:"Objetos são caracois",cls:"c-white"},
+{id:"A-72",status:"Objetos tem olhos de bebe (cabeças de bebe)",cls:"c-white"},
+{id:"A-73",status:"Objetos são mariposas",cls:"c-white"},
+{id:"A-74",status:"Objetos são piratas e marinheiros",cls:"c-blue"},
+{id:"A-75",status:"objetos são sayajins",cls:"c-white"},
+{id:"A-76",status:"Objetos são todos de lama, gelo ou fogo",cls:"c-white"},
+{id:"A-77",status:"Objetos são todos de ouro, prata ou bronze",cls:"c-white"},
+{id:"A-78",status:"Universo onde fazer pedra papel tesoura é extremamente proibido e se fizer, será preso",cls:"c-white"},
+{id:"A-79",status:"Universo onde 2+2=22",cls:"c-white"},
+{id:"A-80",status:"Objetos são todos de madeira ou vidro",cls:"c-white"},
+{id:"A-81",status:"Universo onde hitler venceu a Segunda Guerra Mundial e liderou os humanos, dominando o mundo e o planeta objeto, resumindo, universo nazista",cls:"c-white"},
+{id:"A-82",status:"Universo onde a Terra é plana e o 11 de setembro não aconteceu",cls:"c-white"},
+{id:"A-83",status:"Universo onde os animais dominam e os humanos são criaturas menores e pets",cls:"c-white"},
+{id:"A-84",status:"Universo onde os humanos são todos robôs criados por raças alienígenas",cls:"c-white"},
+{id:"A-85",status:"Universo onde os objetos evoluiram das bactérias",cls:"c-white"},
+{id:"A-86",status:"Universo onde os objetos são todos de mel, chocolate ou leite",cls:"c-white"},
+{id:"A-87",status:"Universo onde os doces são os únicos alimentos disponíveis",cls:"c-white"},
+{id:"A-88",status:"Universo onde todos os seres vivos são objetos",cls:"c-white"},
+{id:"A-89",status:"Universo onde o pensamento é uma dimensão física e a realidade de platão é real",cls:"c-white"},
+{id:"A-90",status:"Universo onde todos os planetas são inabitáveis e nenhuma forma de vida existe",cls:"c-explosion"},
+{id:"A-91",status:"Universo onde diamante nao serve pra nada",cls:"c-white"},
+{id:"A-92",status:"Universo onde a medicina avançou tanto que todos ainda são jovens",cls:"c-white"},
+{id:"A-93",status:"Universo onde um dia dura 8 horas em todos os planetas e os objetos são achatados por causa da gravidade forte",cls:"c-white"},
+{id:"A-94",status:"Universo onde redes sociais nao existem e a unica forma de comunicação é através de telepatia",cls:"c-white"},
+{id:"A-95",status:"Universo onde tudo é usado como alimento e é seguro pro corpo, até urina e bosta e o colesterol é valiosa e benéfica, que não machuca o corpo",cls:"c-white"},
+{id:"A-96",status:"Universo onde os objetos são hologramas ajudantes que os humanos criaram depois de sair da terra",cls:"c-white"},
+{id:"A-97",status:"Universo onde o espaço é um executavel e oq tem alem dele é um computador, e oq tem além dele é o nosso mundo a dimensão A-00",cls:"c-white"},
+{id:"A-98",status:"Universo onde todos podem se dobrar 7 vezes e são extremamente flexíveis",cls:"c-white"},
+{id:"A-99",status:"Universo onde os objetos são maiores que planetas e devoradores de mundos",cls:"c-white"},
+{id:"A-100",status:"Universo onde as pessoas podem ter 6 dedos ou mais",cls:"c-white"},
+{id:"A-101",status:"Universo onde as maquinas são os seres vivos dominantes e os objetos e humanos querem impedir isso",cls:"c-white"},
+{id:"A-102",status:"Universo onde metal e aço quebram facilmente",cls:"c-white"},
+{id:"A-103",status:"Universo onde os objetos são todos de papel e papelão",cls:"c-white"},
+
+];
+
+const grid=document.getElementById('grid');
+function render(filter=""){
+grid.innerHTML="";
+dims.filter(d=> (d.id+d.status).toLowerCase().includes(filter.toLowerCase())).forEach(d=>{
+const div=document.createElement('div');
+div.className=`planet-card`;
+div.innerHTML=`<div class="planet ${d.cls}">${d.id==="A-00"?"":d.id}</div><h2>${d.id}</h2><div class="status">${d.status}</div>`;
+div.onclick=()=>openModal(d);
+grid.appendChild(div);
+});
+}
+function openModal(d){
+document.getElementById('mId').innerText=d.id;
+document.getElementById('mStatus').innerText=d.status;
+document.getElementById('modal').style.display='flex';
+}
+function closeModal(){document.getElementById('modal').style.display='none';}
+render();
+document.getElementById('search').addEventListener('input',e=>render(e.target.value));
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+</script>
+</body>
+</html>
